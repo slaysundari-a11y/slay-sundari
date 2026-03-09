@@ -69,6 +69,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const rating = product.rating || 0;
+
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
 
@@ -174,33 +176,29 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* ⭐ Rating */}
 
-          {product.rating && (
+          <div className="flex items-center gap-1 mb-2">
 
-            <div className="flex items-center gap-1 mb-2">
+            {[...Array(5)].map((_, i) => (
 
-              {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={cn(
+                  "h-3 w-3",
+                  i < Math.round(rating)
+                    ? "fill-primary text-primary"
+                    : "text-muted"
+                )}
+              />
 
-                <Star
-                  key={i}
-                  className={cn(
-                    "h-3 w-3",
-                    i < Math.round(product.rating)
-                      ? "fill-primary text-primary"
-                      : "text-muted"
-                  )}
-                />
+            ))}
 
-              ))}
+            <span className="text-xs text-muted-foreground ml-1">
 
-              <span className="text-xs text-muted-foreground ml-1">
+              {rating.toFixed(1)} ({product.reviewCount || 0} reviews)
 
-                {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+            </span>
 
-              </span>
-
-            </div>
-
-          )}
+          </div>
 
         </CardContent>
 
