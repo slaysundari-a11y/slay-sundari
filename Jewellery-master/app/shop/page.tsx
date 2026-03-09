@@ -17,6 +17,7 @@ image: string;
 category: string;
 inStock: boolean;
 rating?: number;
+reviewCount?: number;
 };
 
 function ShopContent() {
@@ -55,10 +56,13 @@ return ( <div className="container mx-auto py-20 text-center"> <p className="tex
 );
 }
 
-return ( <div className="container mx-auto py-10"> <h1 className="text-3xl font-bold mb-8 capitalize">
-{category ? category + " Products" : "Shop Products"} </h1>
+return ( <div className="container mx-auto py-10">
 
 ```
+  <h1 className="text-3xl font-bold mb-8 capitalize">
+    {category ? category + " Products" : "Shop Products"}
+  </h1>
+
   {products.length === 0 && (
     <p className="text-gray-500">No products found.</p>
   )}
@@ -68,8 +72,8 @@ return ( <div className="container mx-auto py-10"> <h1 className="text-3xl font-
       <ProductCard key={product.id} product={product} />
     ))}
   </div>
+
 </div>
-```
 
 );
 }
