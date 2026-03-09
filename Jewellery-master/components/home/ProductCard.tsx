@@ -194,7 +194,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             <span className="text-xs text-muted-foreground ml-1">
 
-              {rating.toFixed(1)} ({product.reviewCount || 0} reviews)
+              {rating.toFixed(1)} (0 reviews)
 
             </span>
 
