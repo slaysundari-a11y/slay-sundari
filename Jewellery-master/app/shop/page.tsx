@@ -33,7 +33,7 @@ useEffect(() => {
 let url = "/api/products";
 
 if (category) {
-  url += `?category=${category}`;
+  url = "/api/products?category=" + category;
 }
 
 fetch(url)
@@ -61,7 +61,7 @@ return ( <div className="container mx-auto py-10">
 
 ```
   <h1 className="text-3xl font-bold mb-8 capitalize">
-    {category ? `${category} Products` : "Shop Products"}
+    {category ? category + " Products" : "Shop Products"}
   </h1>
 
   {products.length === 0 && (
