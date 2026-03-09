@@ -3,15 +3,31 @@
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 
+type Product = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  category: string;
+  inStock: boolean;
+  rating?: number;
+  reviewCount?: number;
+};
+
 export default function FeaturedProducts() {
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     fetch("/api/products")
       .then(res => res.json())
       .then(data => {
-        setProducts(data.data.slice(0,6));
+        if (data.success) {
+          setProducts(data.data.slice(0,6));
+        }
       });
   }, []);
 
@@ -27,7 +43,7 @@ export default function FeaturedProducts() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
 
-          {products.map(product => (
+          {products.map((product) => (
 
             <ProductCard
               key={product.id}
