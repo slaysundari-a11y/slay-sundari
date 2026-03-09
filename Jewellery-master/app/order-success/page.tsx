@@ -6,13 +6,17 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 function OrderSuccessContent() {
+
 const searchParams = useSearchParams();
 const orderId = searchParams.get("orderId");
 
-return ( <div className="container mx-auto py-20 text-center"> <h1 className="text-3xl font-bold mb-4">
-Order Successful 🎉 </h1>
+return ( <div className="container mx-auto py-20 text-center">
 
 ```
+  <h1 className="text-3xl font-bold mb-4">
+    Order Successful 🎉
+  </h1>
+
   <p>Your order has been placed successfully.</p>
 
   {orderId && (
@@ -20,9 +24,8 @@ Order Successful 🎉 </h1>
       Order ID: {orderId}
     </p>
   )}
-</div>
-```
 
+</div>
 );
 }
 
