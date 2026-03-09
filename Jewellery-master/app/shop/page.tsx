@@ -20,7 +20,6 @@ rating?: number;
 };
 
 function ShopContent() {
-
 const searchParams = useSearchParams();
 const category = searchParams.get("category");
 
@@ -28,10 +27,9 @@ const [products, setProducts] = useState<Product[]>([]);
 const [loading, setLoading] = useState(true);
 
 useEffect(() => {
-
-```
 let url = "/api/products";
 
+```
 if (category) {
   url = "/api/products?category=" + category;
 }
@@ -57,30 +55,19 @@ return ( <div className="container mx-auto py-20 text-center"> <p className="tex
 );
 }
 
-return ( <div className="container mx-auto py-10">
+return ( <div className="container mx-auto py-10"> <h1 className="text-3xl font-bold mb-8 capitalize">
+{category ? category + " Products" : "Shop Products"} </h1>
 
 ```
-  <h1 className="text-3xl font-bold mb-8 capitalize">
-    {category ? category + " Products" : "Shop Products"}
-  </h1>
-
   {products.length === 0 && (
-    <p className="text-gray-500">
-      No products found.
-    </p>
+    <p className="text-gray-500">No products found.</p>
   )}
 
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
     {products.map((product) => (
-      <ProductCard
-        key={product.id}
-        product={product}
-      />
+      <ProductCard key={product.id} product={product} />
     ))}
-
   </div>
-
 </div>
 ```
 
