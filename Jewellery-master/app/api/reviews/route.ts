@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const reviewData = reviewSchema.parse(body);
-    
+
     // Sanitize HTML in comment
     if (reviewData.comment) {
       reviewData.comment = sanitizeHtml(reviewData.comment);
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Update product rating
+    // Update product rating based on actual reviews
     const allReviews = await prisma.review.findMany({
       where: { productId: reviewData.productId },
     });
@@ -157,11 +157,13 @@ export async function POST(request: NextRequest) {
     const avgRating =
       allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
 
+    // Only update rating, NOT reviewCount (reviewCount is set manually in DB)
     await prisma.product.update({
       where: { id: reviewData.productId },
       data: {
         rating: Math.round(avgRating * 10) / 10,
-        reviewCount: allReviews.length,
+        // reviewCount is intentionally NOT updated here
+        // It is set manually in the DB to show realistic review counts
       },
     });
 
