@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, ShoppingCart, Star, Check } from "lucide-react";
-import { useCartStore, useWishlistStore, Product } from "@/lib/store";
+import { useCartStore, useWishlistStore, useAuthStore, Product } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import ProductCard from "@/components/home/ProductCard";
@@ -31,7 +31,7 @@ export default function ProductPage({
   const [quantity, setQuantity] = useState(1);
   const addToCart = useCartStore((state) => state.addItem);
   const addToWishlist = useWishlistStore((state) => state.addItem);
-  // Must call hook unconditionally - use empty string as default if product not loaded yet
+  const { user } = useAuthStore(); // ← Added
   const isInWishlist = useWishlistStore((state) =>
     state.isInWishlist(product?.id || "")
   );
@@ -39,14 +39,11 @@ export default function ProductPage({
   const currentProductIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Immediately reset states when params change (synchronous)
-    // This prevents 404 flash by ensuring loading state is set before async operations
     setLoading(true);
     setNotFound(false);
 
     const fetchProduct = async () => {
       try {
-        // Handle params - could be a Promise or object
         let productId: string;
         if (params instanceof Promise) {
           const resolvedParams = await params;
@@ -55,7 +52,6 @@ export default function ProductPage({
           productId = params.id;
         }
 
-        // If navigating to a different product, clear old data
         if (
           currentProductIdRef.current !== null &&
           currentProductIdRef.current !== productId
@@ -63,10 +59,9 @@ export default function ProductPage({
           setProduct(null);
           setRelatedProducts([]);
           hasFetched.current = null;
-          setLoading(true); // Ensure loading state when switching products
+          setLoading(true);
         }
 
-        // Validate productId
         if (!productId) {
           setNotFound(true);
           setLoading(false);
@@ -74,8 +69,6 @@ export default function ProductPage({
           return;
         }
 
-        // Track current product and proceed with fetch
-        // dedupedFetch will handle request deduplication at the network level
         if (hasFetched.current !== productId) {
           hasFetched.current = productId;
         }
@@ -88,7 +81,6 @@ export default function ProductPage({
         if (productData.success && productData.data) {
           setProduct(productData.data);
 
-          // Fetch related products from same category
           const category = productData.data.category || "women";
           const relatedData = await dedupedFetch<{
             success: boolean;
@@ -115,7 +107,6 @@ export default function ProductPage({
     fetchProduct();
   }, [params]);
 
-  // Show loading state while fetching
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -135,7 +126,6 @@ export default function ProductPage({
     );
   }
 
-  // Show 404 only after loading completes and product doesn't exist
   if (!loading && (notFound || !product)) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -155,14 +145,17 @@ export default function ProductPage({
     );
   }
 
-  // TypeScript guard: product should exist at this point
-  if (!product) {
-    return null; // Should never reach here, but TypeScript needs this
-  }
+  if (!product) return null;
 
   const images = product.images || [product.image];
 
+  // ← Login check added
   const handleAddToCart = async () => {
+    if (!user) {
+      toast.error("Please login to add items to cart");
+      router.push("/login");
+      return;
+    }
     try {
       await addToCart(product, quantity);
       toast.success(`${product.name} added to cart!`);
@@ -171,7 +164,13 @@ export default function ProductPage({
     }
   };
 
+  // ← Login check added
   const handleAddToWishlist = () => {
+    if (!user) {
+      toast.error("Please login to add items to wishlist");
+      router.push("/login");
+      return;
+    }
     addToWishlist(product);
     toast.success(`${product.name} added to wishlist!`);
   };
@@ -418,9 +417,7 @@ export default function ProductPage({
                             </div>
                             {review.createdAt && (
                               <span className="text-xs text-muted-foreground ml-auto">
-                                {new Date(
-                                  review.createdAt
-                                ).toLocaleDateString()}
+                                {new Date(review.createdAt).toLocaleDateString()}
                               </span>
                             )}
                           </div>

@@ -41,7 +41,7 @@ export default function HeroSection() {
             src="/img/slider/1.jpg"
             alt="Hero"
             fill
-            className="object-cover"
+            className="object-cover object-[70%_center] md:object-center"
             priority
           />
         </motion.div>
